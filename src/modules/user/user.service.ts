@@ -1,8 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
+import { DatabaseService } from '../../database/database.service';
 
-@Injectable()
+@Injectable({ scope: Scope.TRANSIENT })
 export class UserService {
+  constructor(private readonly db: DatabaseService) {
+    console.log('instance user service created');
+  }
   getUser() {
-    return 'Hello, this is the User service';
+    return this.db.findAll();
   }
 }
