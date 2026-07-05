@@ -7,6 +7,8 @@ import { AppService } from './app.service';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { User } from './modules/user/user.entity';
+import { ProductsModule } from './modules/products/products.module';
+import { Product } from './entities/product.entity';
 
 @Module({
   imports: [
@@ -23,13 +25,14 @@ import { User } from './modules/user/user.entity';
         username: configService.get<string>('database.username'),
         password: configService.get<string>('database.password'),
         database: configService.get<string>('database.database'),
-        entities: [User], // Thêm User entity vào đây
+        entities: [User, Product],
         synchronize: configService.get<boolean>('database.synchronize'),
         logging: ['query', 'error'],
       }),
     }),
     UserModule,
     AuthModule,
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
