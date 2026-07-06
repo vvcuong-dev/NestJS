@@ -8,6 +8,7 @@ import {
   Post,
   HttpException,
   HttpStatus,
+  Req,
   // PipeTransform,
   // Inject,
   // BadRequestException,
@@ -41,7 +42,8 @@ import UpdateProductDto from './dto/update-product.dto';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
   @Get() // GET /products
-  findAll() {
+  findAll(@Req() req: Request & { user: string }) {
+    console.log('req.user:', req.user); // Log the user property added by the middleware
     return this.productsService.findAll();
   }
 

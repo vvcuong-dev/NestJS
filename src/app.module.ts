@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import configuration from './configs';
@@ -9,6 +9,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { User } from './modules/user/user.entity';
 import { ProductsModule } from './modules/products/products.module';
 import { Product } from './entities/product.entity';
+import { LoggingMiddleware } from './middlewares/logging/logging.middleware';
+import { RoleMiddleware } from './middlewares/role/role.middleware';
 
 @Module({
   imports: [
@@ -37,4 +39,17 @@ import { Product } from './entities/product.entity';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumber: MiddlewareConsumer) {
+    consumber.apply(LoggingMiddleware, RoleMiddleware).forRoutes(
+      {
+        path: 'products/*',
+        method: RequestMethod.ALL,
+      },
+      {
+        path: 'products',
+        method: RequestMethod.ALL,
+      },
+    );
+  }
+}
