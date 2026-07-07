@@ -9,36 +9,15 @@ import {
   HttpException,
   HttpStatus,
   Req,
-  // PipeTransform,
-  // Inject,
-  // BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import CreateProductDto from './dto/create-product.dto';
 import UpdateProductDto from './dto/update-product.dto';
-// import { REQUEST } from '@nestjs/core/router/request/request-constants';
-
-// interface ProductInput {
-//   id?: number;
-//   name: string;
-//   price: number;
-//   description?: string;
-// }
-
-// export class ValidationPipe implements PipeTransform {
-//   constructor(@Inject(REQUEST) private readonly request: Request) {}
-//   transform(value: ProductInput) {
-//     const id = this.request['params'].id;
-//     const { name } = value;
-
-//     if (name === 'iphone updated') {
-//       throw new BadRequestException('Name cannot be "iphone updated"');
-//     }
-//     return { ...value, id: Number(id) };
-//   }
-// }
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller('products')
+@UseGuards(JwtAuthGuard) // Sử dụng JwtAuthGuard để bảo vệ tất cả các route trong ProductsController, chỉ cho phép truy cập khi người dùng đã được xác thực bằng JWT
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
   @Get() // GET /products
