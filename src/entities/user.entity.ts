@@ -20,6 +20,9 @@ export class User {
   @Column()
   password!: string;
 
+  @Column({ name: 'refresh_token', nullable: true })
+  refreshToken?: string;
+
   @Column({ default: true })
   isActive!: boolean;
 

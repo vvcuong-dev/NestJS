@@ -9,12 +9,30 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  login(user: { email: string; password: string }) {
-    const payload = { email: user.email };
+  async login(user: { email: string; password: string; id: number }) {
+    const payload = { email: user.email, id: user.id };
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' }); // Thời gian hết hạn của refresh token (ví dụ: 7 ngày)
+
+    // Lưu refresh token vào cơ sở dữ liệu
+    await this.userService.saveRefreshToken(user.id, refreshToken);
+
     return {
       access_token: this.jwtService.sign(payload),
-      // sign nghĩa là sẽ tạo ra một token dựa trên payload và secret key đã được cấu hình trong JwtModule còn
-      // verify nghĩa là sẽ kiểm tra xem token có hợp lệ hay không dựa trên secret key đã được cấu hình trong JwtModule
+      refresh_token: refreshToken,
     };
+  }
+
+  verifyRefreshToken(refreshToken: string) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const decoded = this.jwtService.decode(refreshToken);
+    if (decoded) {
+      const status = this.userService.verifyRefreshToken(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+        decoded.id,
+        refreshToken,
+      );
+      return status;
+    }
+    return false;
   }
 }

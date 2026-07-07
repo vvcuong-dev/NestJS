@@ -49,4 +49,26 @@ export class UserService {
     }
     return user;
   }
+  async saveRefreshToken(userId: number, refreshToken: string): Promise<void> {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    if (user) {
+      user.refreshToken = hashedRefreshToken;
+      await this.userRepository.save(user);
+    }
+  }
+
+  async verifyRefreshToken(userId: number, refreshToken: string) {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (user) {
+      const status = await bcrypt.compare(
+        refreshToken,
+        user.refreshToken || '',
+      );
+      if (status) {
+        return user;
+      }
+    }
+    return false;
+  }
 }

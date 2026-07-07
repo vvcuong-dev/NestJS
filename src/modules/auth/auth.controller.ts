@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -29,6 +30,15 @@ export class AuthController {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
     return this.authService.login(request.user);
   }
+
+  @Post('/refresh-token') // POST /auth/refresh-token
+  refreshToken(@Body() { refreshToken }: { refreshToken: string }) {
+    if (!refreshToken) {
+      throw new BadRequestException('Refresh token is required');
+    }
+    return this.authService.verifyRefreshToken(refreshToken);
+  }
+
   @Get('/profile') // GET /auth/profile
   @UseGuards(JwtAuthGuard) // Sử dụng JwtAuthGuard để bảo vệ route này, chỉ cho phép truy cập khi người dùng đã được xác thực bằng JWT
   getProfile(@Request() request: any) {
